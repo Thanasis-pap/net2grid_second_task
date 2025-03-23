@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/test_int24.dir/test/test_int24.c.o CMakeFiles/test_int24.dir/src/int24.c.o -o test_int24
