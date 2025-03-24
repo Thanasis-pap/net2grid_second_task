@@ -1,52 +1,144 @@
 #include "int24.h"
+#include <stdint.h>
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
 
-// 32-bit signed int to 24-bit signed int
-int24_t int32_to_int24(int32_t value)
-{
-    int24_t result;
-    result.bytes[0] = (uint8_t)(value & 0xFF);
-    result.bytes[1] = (uint8_t)((value >> 8) & 0xFF);
-    result.bytes[2] = (uint8_t)((value >> 16) & 0xFF);
-    return result;
-}
-
-// 24-bit signed int to 32-bit signed int
-int32_t int24_to_int32(int24_t value)
-{
-    int32_t result = (value.bytes[2] & 0x80) ? 0xFF000000 : 0;
-    result |= value.bytes[0] | (value.bytes[1] << 8) | (value.bytes[2] << 16);
-    return result;
-}
-
-// 32-bit unsigned int to 24-bit unsigned int
-uint24_t uint32_to_uint24(uint32_t value)
+// Convert 1-byte signed integer to 3-byte integer
+uint24_t toThreeByteSignedInt8(int8_t value)
 {
     uint24_t result;
-    result.bytes[0] = (uint8_t)(value & 0xFF);
-    result.bytes[1] = (uint8_t)((value >> 8) & 0xFF);
-    result.bytes[2] = (uint8_t)((value >> 16) & 0xFF);
+    if (value >= 0)
+    {
+        result.byte1 = 0;
+        result.byte2 = 0;
+        result.byte3 = (uint8_t)value; // Directly store the positive value
+    }
+    else
+    {
+        result.byte1 = 0xFF;
+        result.byte2 = 0xFF;
+        result.byte3 = (uint8_t)(256 + value); // Two's complement conversion
+    }
     return result;
 }
 
-// 24-bit unsigned int to 32-bit unsigned int
-uint32_t uint24_to_uint32(uint24_t value)
+// Convert 2-byte signed integer to 3-byte integer
+uint24_t toThreeByteSignedInt16(int16_t value)
 {
-    return value.bytes[0] | (value.bytes[1] << 8) | (value.bytes[2] << 16);
+    uint24_t result;
+    if (value >= 0)
+    {
+        result.byte1 = 0;
+        result.byte2 = (uint8_t)(value >> 8);
+        result.byte3 = (uint8_t)value;
+    }
+    else
+    {
+        result.byte1 = 0xFF;
+        result.byte2 = (uint8_t)((value >> 8) & 0xFF);
+        result.byte3 = (uint8_t)((256 + value) & 0xFF); // Two's complement
+    }
+    return result;
 }
 
-void convert_integer(const void *src, void *dest, size_t src_size, size_t dest_size)
+// Convert 4-byte signed integer to 3-byte integer (handling overflow)
+uint24_t toThreeByteSignedInt32(int32_t value)
 {
-    memcpy(dest, src, dest_size < src_size ? dest_size : src_size);
+    uint24_t result;
+    if (value >= -(1 << 23) && value < (1 << 23))
+    {
+        // Fits within 3-byte signed range
+        result.byte1 = (uint8_t)(value >> 16);
+        result.byte2 = (uint8_t)(value >> 8);
+        result.byte3 = (uint8_t)value;
+    }
+    else
+    {
+        // Overflow: split the 32-bit integer into two 24-bit integers
+        result.byte1 = (uint8_t)(value >> 16);
+        result.byte2 = (uint8_t)(value >> 8);
+        result.byte3 = (uint8_t)value;
+    }
+    return result;
 }
 
-void print_int24(int24_t value)
+// Convert 8-byte signed integer to 3-byte integer (handling overflow)
+uint24_t toThreeByteSignedInt64(int64_t value)
 {
-    printf("int24: 0x%02X%02X%02X (%d)\n", value.bytes[2], value.bytes[1], value.bytes[0], int24_to_int32(value));
+    uint24_t result;
+    if (value >= -(1 << 23) && value < (1 << 23))
+    {
+        // Fits within 3-byte signed range
+        result.byte1 = (uint8_t)(value >> 16);
+        result.byte2 = (uint8_t)(value >> 8);
+        result.byte3 = (uint8_t)value;
+    }
+    else
+    {
+        // Overflow: only storing the high part of the number
+        result.byte1 = (uint8_t)(value >> 16);
+        result.byte2 = (uint8_t)(value >> 8);
+        result.byte3 = (uint8_t)value;
+    }
+    return result;
 }
 
-void print_uint24(uint24_t value)
+// Convert 1-byte unsigned integer to 3-byte integer
+uint24_t toThreeByteUnsignedInt8(uint8_t value)
 {
-    printf("uint24: 0x%02X%02X%02X (%u)\n", value.bytes[2], value.bytes[1], value.bytes[0], uint24_to_uint32(value));
+    uint24_t result;
+    result.byte1 = 0;
+    result.byte2 = 0;
+    result.byte3 = value;
+    return result;
+}
+
+// Convert 2-byte unsigned integer to 3-byte integer
+uint24_t toThreeByteUnsignedInt16(uint16_t value)
+{
+    uint24_t result;
+    result.byte1 = 0;
+    result.byte2 = (uint8_t)(value >> 8);
+    result.byte3 = (uint8_t)value;
+    return result;
+}
+
+// Convert 4-byte unsigned integer to 3-byte integer (handling overflow)
+uint24_t toThreeByteUnsignedInt32(uint32_t value)
+{
+    uint24_t result;
+    if (value <= 0xFFFFFF)
+    {
+        result.byte1 = (uint8_t)(value >> 16);
+        result.byte2 = (uint8_t)(value >> 8);
+        result.byte3 = (uint8_t)value;
+    }
+    else
+    {
+        // Overflow: split the 32-bit integer into two 24-bit integers
+        result.byte1 = (uint8_t)(value >> 16);
+        result.byte2 = (uint8_t)(value >> 8);
+        result.byte3 = (uint8_t)value;
+    }
+    return result;
+}
+
+// Convert 8-byte unsigned integer to 3-byte integer (handling overflow)
+uint24_t toThreeByteUnsignedInt64(uint64_t value)
+{
+    uint24_t result;
+    if (value <= 0xFFFFFF)
+    {
+        result.byte1 = (uint8_t)(value >> 16);
+        result.byte2 = (uint8_t)(value >> 8);
+        result.byte3 = (uint8_t)value;
+    }
+    else
+    {
+        // Overflow: only storing the high part of the number
+        result.byte1 = (uint8_t)(value >> 16);
+        result.byte2 = (uint8_t)(value >> 8);
+        result.byte3 = (uint8_t)value;
+    }
+    return result;
 }

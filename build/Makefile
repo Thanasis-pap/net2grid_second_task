@@ -117,19 +117,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named main
-
-# Build rule for target.
-main: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 main
-.PHONY : main
-
-# fast build rule for target.
-main/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
-.PHONY : main/fast
-
-#=============================================================================
 # Target rules for targets named test_int24
 
 # Build rule for target.
@@ -147,7 +134,6 @@ src/int24.o: src/int24.c.o
 
 # target to build an object file
 src/int24.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/int24.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_int24.dir/build.make CMakeFiles/test_int24.dir/src/int24.c.o
 .PHONY : src/int24.c.o
 
@@ -156,7 +142,6 @@ src/int24.i: src/int24.c.i
 
 # target to preprocess a source file
 src/int24.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/int24.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_int24.dir/build.make CMakeFiles/test_int24.dir/src/int24.c.i
 .PHONY : src/int24.c.i
 
@@ -165,33 +150,8 @@ src/int24.s: src/int24.c.s
 
 # target to generate assembly for a file
 src/int24.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/int24.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_int24.dir/build.make CMakeFiles/test_int24.dir/src/int24.c.s
 .PHONY : src/int24.c.s
-
-src/main.o: src/main.c.o
-.PHONY : src/main.o
-
-# target to build an object file
-src/main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.c.o
-.PHONY : src/main.c.o
-
-src/main.i: src/main.c.i
-.PHONY : src/main.i
-
-# target to preprocess a source file
-src/main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.c.i
-.PHONY : src/main.c.i
-
-src/main.s: src/main.c.s
-.PHONY : src/main.s
-
-# target to generate assembly for a file
-src/main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/main.c.s
-.PHONY : src/main.c.s
 
 test/test_int24.o: test/test_int24.c.o
 .PHONY : test/test_int24.o
@@ -225,14 +185,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... main"
 	@echo "... test_int24"
 	@echo "... src/int24.o"
 	@echo "... src/int24.i"
 	@echo "... src/int24.s"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
 	@echo "... test/test_int24.o"
 	@echo "... test/test_int24.i"
 	@echo "... test/test_int24.s"

@@ -1,17 +1,19 @@
-# 24-bit Integer Conversion in POSIX C
+# IntConverter Project
 
-This project provides an interface to convert between standard native integer types (1, 2, 4, 8 bytes) and 24-bit integers.
+## Description
 
-## Features
+This project contains a C implementation of an integer conversion interface that can convert between native integer types (1-byte, 2-byte, 4-byte, 8-byte integers) and a custom 3-byte integer format.
 
-- Supports signed and unsigned conversions.
-- Uses 2’s complement for signed 24-bit numbers.
-- Generic function for arbitrary X-byte to Y-byte conversion.
+## Project Structure
 
-## Build Instructions
+- `src/`: Contains the source code files.
+- `inc/`: Contains the header files.
+- `test/`: Contains the unit tests.
 
-```sh
-mkdir build && cd build
-cmake ..
-make
-```
+## Building the Project
+
+1. Create a build directory:
+   ```bash
+   mkdir build
+   cd build
+   ```

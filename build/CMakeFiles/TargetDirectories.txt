@@ -1,4 +1,3 @@
-/home/thanasis/net2grid_second_task/build/CMakeFiles/main.dir
 /home/thanasis/net2grid_second_task/build/CMakeFiles/test_int24.dir
 /home/thanasis/net2grid_second_task/build/CMakeFiles/edit_cache.dir
 /home/thanasis/net2grid_second_task/build/CMakeFiles/rebuild_cache.dir

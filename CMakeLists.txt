@@ -5,5 +5,4 @@ set(CMAKE_C_STANDARD 11)
 
 include_directories(inc)
 
-add_executable(main src/main.c src/int24.c)
 add_executable(test_int24 test/test_int24.c src/int24.c)
