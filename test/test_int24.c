@@ -1,73 +1,84 @@
+#include "int24.h"
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include "int24.h"
+#include <assert.h>
 
-// Forward declaration of the conversion functions
-uint24_t toThreeByteSignedInt8(int8_t value);
-uint24_t toThreeByteSignedInt16(int16_t value);
-uint24_t toThreeByteSignedInt32(int32_t value);
-uint24_t toThreeByteSignedInt64(int64_t value);
-uint24_t toThreeByteUnsignedInt8(uint8_t value);
-uint24_t toThreeByteUnsignedInt16(uint16_t value);
-uint24_t toThreeByteUnsignedInt32(uint32_t value);
-uint24_t toThreeByteUnsignedInt64(uint64_t value);
-
-void printThreeByteResult(uint24_t result)
+void printByteArray(uint24_t value)
 {
-    printf("Byte 1: 0x%02X, Byte 2: 0x%02X, Byte 3: 0x%02X\n",
-           result.byte1, result.byte2, result.byte3);
+    printf("Byte1: 0x%02X, Byte2: 0x%02X, Byte3: 0x%02X\n", value.byte1, value.byte2, value.byte3);
+}
+
+void printSplitInt24(SplitInt24 value)
+{
+    printf("Lower - Byte1: 0x%02X, Byte2: 0x%02X, Byte3: 0x%02X\n", value.lower.byte1, value.lower.byte2, value.lower.byte3);
+    printf("Upper - Byte1: 0x%02X, Byte2: 0x%02X, Byte3: 0x%02X\n", value.upper.byte1, value.upper.byte2, value.upper.byte3);
 }
 
 int main()
 {
-    // Test 1-byte signed integer to 3-byte signed conversion
-    int8_t signed8 = -50;
-    uint24_t result8 = toThreeByteSignedInt8(signed8);
-    printf("Testing signed 8-bit to 3-byte conversion (int8_t = %d):\n", signed8);
-    printThreeByteResult(result8);
+    // Test toThreeByteSignedInt8
+    printf("Testing toThreeByteSignedInt8\n");
+    int8_t testValue8 = 127;
+    uint24_t result8 = toThreeByteSignedInt8(testValue8);
+    printByteArray(result8); // Expected: Byte1: 0x00, Byte2: 0x00, Byte3: 0x7F
 
-    // Test 2-byte signed integer to 3-byte signed conversion
-    int16_t signed16 = -3200;
-    uint24_t result16 = toThreeByteSignedInt16(signed16);
-    printf("\nTesting signed 16-bit to 3-byte conversion (int16_t = %d):\n", signed16);
-    printThreeByteResult(result16);
+    testValue8 = -128;
+    result8 = toThreeByteSignedInt8(testValue8);
+    printByteArray(result8); // Expected: Byte1: 0xFF, Byte2: 0xFF, Byte3: 0x80
 
-    // Test 4-byte signed integer to 3-byte signed conversion
-    int32_t signed32 = 123456;
-    uint24_t result32 = toThreeByteSignedInt32(signed32);
-    printf("\nTesting signed 32-bit to 3-byte conversion (int32_t = %d):\n", signed32);
-    printThreeByteResult(result32);
+    // Test toThreeByteSignedInt16
+    printf("\nTesting toThreeByteSignedInt16\n");
+    int16_t testValue16 = 32767;
+    uint24_t result16 = toThreeByteSignedInt16(testValue16);
+    printByteArray(result16); // Expected: Byte1: 0x00, Byte2: 0x7F, Byte3: 0xFF
 
-    // Test 8-byte signed integer to 3-byte signed conversion
-    int64_t signed64 = -2000000;
-    uint24_t result64 = toThreeByteSignedInt64(signed64);
-    printf("\nTesting signed 64-bit to 3-byte conversion (int64_t = %lld):\n", signed64);
-    printThreeByteResult(result64);
+    testValue16 = -32768;
+    result16 = toThreeByteSignedInt16(testValue16);
+    printByteArray(result16); // Expected: Byte1: 0xFF, Byte2: 0x80, Byte3: 0x00
 
-    // Test 1-byte unsigned integer to 3-byte unsigned conversion
-    uint8_t unsigned8 = 200;
-    uint24_t resultU8 = toThreeByteUnsignedInt8(unsigned8);
-    printf("\nTesting unsigned 8-bit to 3-byte conversion (uint8_t = %d):\n", unsigned8);
-    printThreeByteResult(resultU8);
+    // Test toThreeByteUnsignedInt8
+    printf("\nTesting toThreeByteUnsignedInt8\n");
+    uint8_t testValueU8 = 255;
+    uint24_t resultU8 = toThreeByteUnsignedInt8(testValueU8);
+    printByteArray(resultU8); // Expected: Byte1: 0x00, Byte2: 0x00, Byte3: 0xFF
 
-    // Test 2-byte unsigned integer to 3-byte unsigned conversion
-    uint16_t unsigned16 = 12345;
-    uint24_t resultU16 = toThreeByteUnsignedInt16(unsigned16);
-    printf("\nTesting unsigned 16-bit to 3-byte conversion (uint16_t = %d):\n", unsigned16);
-    printThreeByteResult(resultU16);
+    // Test toThreeByteUnsignedInt16
+    printf("\nTesting toThreeByteUnsignedInt16\n");
+    uint16_t testValueU16 = 65535;
+    uint24_t resultU16 = toThreeByteUnsignedInt16(testValueU16);
+    printByteArray(resultU16); // Expected: Byte1: 0x00, Byte2: 0xFF, Byte3: 0xFF
 
-    // Test 4-byte unsigned integer to 3-byte unsigned conversion
-    uint32_t unsigned32 = 987654;
-    uint24_t resultU32 = toThreeByteUnsignedInt32(unsigned32);
-    printf("\nTesting unsigned 32-bit to 3-byte conversion (uint32_t = %u):\n", unsigned32);
-    printThreeByteResult(resultU32);
+    // Test toTwoThreeByteSignedInt32
+    printf("\nTesting toTwoThreeByteSignedInt32\n");
+    int32_t testValue32 = 8388607; // Maximum 3-byte signed value
+    SplitInt24 result32 = toTwoThreeByteSignedInt32(testValue32);
+    printSplitInt24(result32); // Expected: Lower - Byte1: 0x00, Byte2: 0x7F, Byte3: 0xFF, Upper - Byte1: 0x00, Byte2: 0x00, Byte3: 0x00
 
-    // Test 8-byte unsigned integer to 3-byte unsigned conversion
-    uint64_t unsigned64 = 123456789;
-    uint24_t resultU64 = toThreeByteUnsignedInt64(unsigned64);
-    printf("\nTesting unsigned 64-bit to 3-byte conversion (uint64_t = %llu):\n", unsigned64);
-    printThreeByteResult(resultU64);
+    testValue32 = -8388608; // Minimum 3-byte signed value
+    result32 = toTwoThreeByteSignedInt32(testValue32);
+    printSplitInt24(result32); // Expected: Lower - Byte1: 0xFF, Byte2: 0x80, Byte3: 0x00, Upper - Byte1: 0xFF, Byte2: 0xFF, Byte3: 0xFF
+
+    // Test toTwoThreeByteUnsignedInt32
+    printf("\nTesting toTwoThreeByteUnsignedInt32\n");
+    uint32_t testValueU32 = 16777215; // Maximum 3-byte unsigned value
+    SplitInt24 resultU32 = toTwoThreeByteUnsignedInt32(testValueU32);
+    printSplitInt24(resultU32); // Expected: Lower - Byte1: 0xFF, Byte2: 0xFF, Byte3: 0xFF, Upper - Byte1: 0x00, Byte2: 0x00, Byte3: 0x00
+
+    // Test toTwoThreeByteSignedInt64
+    printf("\nTesting toTwoThreeByteSignedInt64\n");
+    int64_t testValue64 = 8388607; // Maximum 3-byte signed value
+    SplitInt24 result64 = toTwoThreeByteSignedInt64(testValue64);
+    printSplitInt24(result64); // Expected: Lower - Byte1: 0x00, Byte2: 0x7F, Byte3: 0xFF, Upper - Byte1: 0x00, Byte2: 0x00, Byte3: 0x00
+
+    testValue64 = -8388608; // Minimum 3-byte signed value
+    result64 = toTwoThreeByteSignedInt64(testValue64);
+    printSplitInt24(result64); // Expected: Lower - Byte1: 0xFF, Byte2: 0x80, Byte3: 0x00, Upper - Byte1: 0xFF, Byte2: 0xFF, Byte3: 0xFF
+
+    // Test toTwoThreeByteUnsignedInt64
+    printf("\nTesting toTwoThreeByteUnsignedInt64\n");
+    uint64_t testValueU64 = 16777215; // Maximum 3-byte unsigned value
+    SplitInt24 resultU64 = toTwoThreeByteUnsignedInt64(testValueU64);
+    printSplitInt24(resultU64); // Expected: Lower - Byte1: 0xFF, Byte2: 0xFF, Byte3: 0xFF, Upper - Byte1: 0x00, Byte2: 0x00, Byte3: 0x00
 
     return 0;
 }

@@ -41,48 +41,59 @@ uint24_t toThreeByteSignedInt16(int16_t value)
     return result;
 }
 
-// Convert 4-byte signed integer to 3-byte integer (handling overflow)
-uint24_t toThreeByteSignedInt32(int32_t value)
+/// Convert 4-byte signed integer to two 3-byte integers (handling overflow)
+SplitInt24 toTwoThreeByteSignedInt32(int32_t value)
 {
-    uint24_t result;
+    SplitInt24 result;
     if (value >= -(1 << 23) && value < (1 << 23))
     {
         // Fits within 3-byte signed range
-        result.byte1 = (uint8_t)(value >> 16);
-        result.byte2 = (uint8_t)(value >> 8);
-        result.byte3 = (uint8_t)value;
+        result.lower.byte1 = (uint8_t)(value >> 16);
+        result.lower.byte2 = (uint8_t)(value >> 8);
+        result.lower.byte3 = (uint8_t)value;
+        result.upper.byte1 = 0;
+        result.upper.byte2 = 0;
+        result.upper.byte3 = 0;
     }
     else
     {
         // Overflow: split the 32-bit integer into two 24-bit integers
-        result.byte1 = (uint8_t)(value >> 16);
-        result.byte2 = (uint8_t)(value >> 8);
-        result.byte3 = (uint8_t)value;
+        result.lower.byte1 = (uint8_t)(value >> 16);
+        result.lower.byte2 = (uint8_t)(value >> 8);
+        result.lower.byte3 = (uint8_t)value;
+        result.upper.byte1 = (uint8_t)(value >> 40);
+        result.upper.byte2 = (uint8_t)(value >> 32);
+        result.upper.byte3 = (uint8_t)(value >> 24);
     }
     return result;
 }
 
-// Convert 8-byte signed integer to 3-byte integer (handling overflow)
-uint24_t toThreeByteSignedInt64(int64_t value)
+// Convert 8-byte signed integer to two 3-byte integers (handling overflow)
+SplitInt24 toTwoThreeByteSignedInt64(int64_t value)
 {
-    uint24_t result;
+    SplitInt24 result;
     if (value >= -(1 << 23) && value < (1 << 23))
     {
         // Fits within 3-byte signed range
-        result.byte1 = (uint8_t)(value >> 16);
-        result.byte2 = (uint8_t)(value >> 8);
-        result.byte3 = (uint8_t)value;
+        result.lower.byte1 = (uint8_t)(value >> 16);
+        result.lower.byte2 = (uint8_t)(value >> 8);
+        result.lower.byte3 = (uint8_t)value;
+        result.upper.byte1 = 0;
+        result.upper.byte2 = 0;
+        result.upper.byte3 = 0;
     }
     else
     {
-        // Overflow: only storing the high part of the number
-        result.byte1 = (uint8_t)(value >> 16);
-        result.byte2 = (uint8_t)(value >> 8);
-        result.byte3 = (uint8_t)value;
+        // Overflow: split the 64-bit integer into two 24-bit integers
+        result.lower.byte1 = (uint8_t)(value >> 16);
+        result.lower.byte2 = (uint8_t)(value >> 8);
+        result.lower.byte3 = (uint8_t)value;
+        result.upper.byte1 = (uint8_t)(value >> 40);
+        result.upper.byte2 = (uint8_t)(value >> 32);
+        result.upper.byte3 = (uint8_t)(value >> 24);
     }
     return result;
 }
-
 // Convert 1-byte unsigned integer to 3-byte integer
 uint24_t toThreeByteUnsignedInt8(uint8_t value)
 {
@@ -103,42 +114,54 @@ uint24_t toThreeByteUnsignedInt16(uint16_t value)
     return result;
 }
 
-// Convert 4-byte unsigned integer to 3-byte integer (handling overflow)
-uint24_t toThreeByteUnsignedInt32(uint32_t value)
+// Convert 4-byte unsigned integer to two 3-byte integers (handling overflow)
+SplitInt24 toTwoThreeByteUnsignedInt32(uint32_t value)
 {
-    uint24_t result;
+    SplitInt24 result;
     if (value <= 0xFFFFFF)
     {
-        result.byte1 = (uint8_t)(value >> 16);
-        result.byte2 = (uint8_t)(value >> 8);
-        result.byte3 = (uint8_t)value;
+        result.lower.byte1 = (uint8_t)(value >> 16);
+        result.lower.byte2 = (uint8_t)(value >> 8);
+        result.lower.byte3 = (uint8_t)value;
+        result.upper.byte1 = 0;
+        result.upper.byte2 = 0;
+        result.upper.byte3 = 0;
     }
     else
     {
         // Overflow: split the 32-bit integer into two 24-bit integers
-        result.byte1 = (uint8_t)(value >> 16);
-        result.byte2 = (uint8_t)(value >> 8);
-        result.byte3 = (uint8_t)value;
+        result.lower.byte1 = (uint8_t)(value >> 16);
+        result.lower.byte2 = (uint8_t)(value >> 8);
+        result.lower.byte3 = (uint8_t)value;
+        result.upper.byte1 = (uint8_t)(value >> 40);
+        result.upper.byte2 = (uint8_t)(value >> 32);
+        result.upper.byte3 = (uint8_t)(value >> 24);
     }
     return result;
 }
 
-// Convert 8-byte unsigned integer to 3-byte integer (handling overflow)
-uint24_t toThreeByteUnsignedInt64(uint64_t value)
+// Convert 8-byte unsigned integer to two 3-byte integers (handling overflow)
+SplitInt24 toTwoThreeByteUnsignedInt64(uint64_t value)
 {
-    uint24_t result;
+    SplitInt24 result;
     if (value <= 0xFFFFFF)
     {
-        result.byte1 = (uint8_t)(value >> 16);
-        result.byte2 = (uint8_t)(value >> 8);
-        result.byte3 = (uint8_t)value;
+        result.lower.byte1 = (uint8_t)(value >> 16);
+        result.lower.byte2 = (uint8_t)(value >> 8);
+        result.lower.byte3 = (uint8_t)value;
+        result.upper.byte1 = 0;
+        result.upper.byte2 = 0;
+        result.upper.byte3 = 0;
     }
     else
     {
-        // Overflow: only storing the high part of the number
-        result.byte1 = (uint8_t)(value >> 16);
-        result.byte2 = (uint8_t)(value >> 8);
-        result.byte3 = (uint8_t)value;
+        // Overflow: split the 64-bit integer into two 24-bit integers
+        result.lower.byte1 = (uint8_t)(value >> 16);
+        result.lower.byte2 = (uint8_t)(value >> 8);
+        result.lower.byte3 = (uint8_t)value;
+        result.upper.byte1 = (uint8_t)(value >> 40);
+        result.upper.byte2 = (uint8_t)(value >> 32);
+        result.upper.byte3 = (uint8_t)(value >> 24);
     }
     return result;
 }
